@@ -47,8 +47,8 @@ __version__="0.1 beta"
 
 
 
-app_key = '919fc0716ad8f931325ad9c0a483574e'
-app_pass = '919fc0716ad8f931325ad9c0a483574e'
+app_key = 'yours app_key'
+app_pass = 'yours app_pass'
 
 def get_prelogin_pubkey():
     args = {
