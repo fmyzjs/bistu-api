@@ -70,9 +70,9 @@ def get_prelogin_pubkey():
         print 'Getting prelogin status met error!'
         return None
 
-def do_login(username,passwd):
+def login(username,passwd):
     """
-    Perform login action with use name, password and saving cookies.
+    Perform login action with use name, password .
     @param username: login user name
     @param passwd: login password
     """
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     username = '2010012712'
     passwd = '07017217' 
     try:
-        accessToken, user, idtype = do_login(username, passwd)
+        accessToken, user, idtype = login(username, passwd)
         print 'Login  succeeded'
         print  accessToken, user, idtype
     except:
