@@ -43,8 +43,8 @@ __version__="0.1 beta"
 
 
 
-app_key = '919fc0716ad8f931325ad9c0a483574e'
-app_pass = '919fc0716ad8f931325ad9c0a483574e'
+app_key = 'yours'
+app_pass = 'yours'
 
 def get_login_pubkey():
     args = {
@@ -53,7 +53,7 @@ def get_login_pubkey():
         'table': 'member',
         'action': 'getloginkey'
         }
-    
+
     data = urllib2.urlopen('http://api.bistu.edu.cn/api/api_app.php?' + urllib.urlencode(args)).read()
     try:
         data = json.loads(data)
@@ -113,8 +113,8 @@ def login(username, password, info):
 
 if __name__ == '__main__':
     
-    username = '2010012712'
-    passwd = '07017217'
+    username = 'yours'
+    passwd = 'yours'
     try:
         loginkey = get_login_pubkey()
     except:
