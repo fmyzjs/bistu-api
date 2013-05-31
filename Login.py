@@ -12,10 +12,6 @@ try:
     import sys
     import urllib
     import urllib2
-    import cookielib
-    import base64
-    import re
-    import hashlib
     import json
     import rsa
     import binascii
@@ -42,69 +38,31 @@ which is:
 
 
 __prog__= "BISTU_API_login for python"
-__site__= "http://zjsfmy.github.com"
+__site__= "http://fmyzjs.github.com"
 __version__="0.1 beta"
 
 
 
-app_key = 'yours app_key'
-app_pass = 'yours app_pass'
+app_key = '919fc0716ad8f931325ad9c0a483574e'
+app_pass = '919fc0716ad8f931325ad9c0a483574e'
 
-def get_prelogin_pubkey():
+def get_login_pubkey():
     args = {
         'app_key': app_key,
         'app_pass': app_pass,
         'table': 'member',
         'action': 'getloginkey'
         }
-    """
-    Perform prelogin action, get prelogin status, including pubkey
-    """
-    prelogin_url = 'http://api.bistu.edu.cn/api/api_app.php?' + urllib.urlencode(args);
-    data = urllib2.urlopen(prelogin_url).read()
+    
+    data = urllib2.urlopen('http://api.bistu.edu.cn/api/api_app.php?' + urllib.urlencode(args)).read()
     try:
         data = json.loads(data)
         pubkey = data
         return pubkey
     except:
-        print 'Getting prelogin status met error!'
         return None
 
-def login(username,passwd):
-    """
-    Perform login action with use name, password .
-    @param username: login user name
-    @param passwd: login password
-    """
-    #GET data 
-    login_data = {
-        'app_key': app_key,
-        'app_pass': app_pass,
-        'table': 'member',
-        'action': 'login',
-        'info': ''
-        }
-    try:
-        loginkey = get_prelogin_pubkey()
-    except:
-        return    
-    # GET data
-    login_data['info'] = get_info_rsa(username, passwd, loginkey)
-    login_url = 'http://api.bistu.edu.cn/api/api_app.php?' + urllib.urlencode(login_data);
-    result = urllib2.urlopen(login_url)
-    text = result.read()
-    try:
-        data = json.loads(text)
-        accessToken = data['accessToken']
-        user = data['username']
-        idtype = data['idtype']
-        return accessToken, user, idtype
-    except:
-        print 'Getting user info error!'
-        return None
-
-
-def get_info_rsa(username, passwd , loginkey):
+def get_info_rsa(username, password , loginkey):
     """
         Get rsa2 encrypted password, using RSA module from https://pypi.python.org/pypi/rsa/3.1.1, documents can be accessed at 
         http://stuvel.eu/files/python-rsa-doc/index.html
@@ -124,14 +82,56 @@ def get_info_rsa(username, passwd , loginkey):
     #trun back encrypted password binaries to hex string
     return binascii.b2a_hex(encropy_pwd)
 
+def login(username, password, info):
+    """
+    Perform login action with use name, password .
+    @param username: login user name
+    @param passwd: login password
+    """
+    #GET data 
+    login_data = {
+        'app_key': app_key,
+        'app_pass': app_pass,
+        'table': 'member',
+        'action': 'login',
+        'info': info
+        }
+
+    # GET data
+    result = urllib2.urlopen('http://api.bistu.edu.cn/api/api_app.php?' + urllib.urlencode(login_data)).read();
+    try:
+        data = json.loads(result)
+        accessToken = data['accessToken']
+        user = data['username']
+        idtype = data['idtype']
+        userid = data['userid']
+        return accessToken, user, idtype, userid
+    except:
+        return None
+
+
 
 if __name__ == '__main__':
     
     username = '2010012712'
-    passwd = '07017217' 
+    passwd = '07017217'
     try:
-        accessToken, user, idtype = login(username, passwd)
-        print 'Login  succeeded'
-        print  accessToken, user, idtype
+        loginkey = get_login_pubkey()
     except:
-        print 'Login  failed'
+        print 'Getting user pubkey error!'
+    else:
+        try:
+            info = get_info_rsa(username=username ,password=passwd ,loginkey=loginkey)
+        except:
+            print 'Encrypt the user information failed!'
+        else:
+            try:
+                accessToken, user, idtype, userid= login(username=username, password=passwd ,info=info)
+                print 'Login  succeeded'
+                print  accessToken, user, idtype, userid
+            except:
+                print 'Login failed'
+
+
+
+
